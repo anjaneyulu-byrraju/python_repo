@@ -61,32 +61,30 @@ jobs:
         name: ScanResults
         path: /github/home/results.json
 
-  # Convert pipeline scan output to SARIF format  
-  process-results:
-    needs: pipeline-scan
+  veracode-fix:
     runs-on: ubuntu-latest
-    
-    permissions:
-      id-token: write
-      actions: read
-      contents: read
-      pull-requests: read
-      security-events: write
-    
+    needs: pipeline_scan
+    name: create fixes
     steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
 
-    - name: Retrieve results
-      uses: actions/download-artifact@v4
-      with:
-        name: ScanResults
-
-    - name: convert
-      uses: veracode/veracode-pipeline-scan-results-to-sarif@master
-      with:
-        pipeline-results-json: results.json
-        output-results-sarif: veracode-results.sarif
-        finding-rule-level: "4:3:0"
-    - uses: github/codeql-action/upload-sarif@v3
-      with:
-    # Path to SARIF file relative to the root of the repository
-        sarif_file: veracode-results.sarif     
+      - name: get flaw file
+        uses: actions/download-artifact@v4
+        with:
+          name: Veracode Pipeline-Scan Results
+          
+      - name: Create fixes from static findings
+        id: convert
+        uses: Veracode/veracode-fix@main
+        with:
+          inputFile: results.json
+          vid: ${{ secrets.VID }}
+          vkey: ${{ secrets.VKEY }}
+          source_base_path_1: "sample/"
+          language: java
+          prComment: true
+          cwe: '117,331'
+          DEBUG: true
+          fixType: single
+          files: all
