@@ -1,18 +1,12 @@
-# This workflow will initiate a Veracode Static Analysis Pipeline scan, return a results.json and convert to SARIF for upload as a code scanning alert
+name: python repo
 
-name: Veracode Static Analysis Pipeline Scan
-
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
-  workflow_dispatch:
-  push:
+   push:
     branches:
-      - '**'
-  pull_request:
+      - main
+   pull_request:
     branches:
-      - master
-      - main  
+      - main
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -82,7 +76,7 @@ jobs:
           vid: ${{ secrets.VID }}
           vkey: ${{ secrets.VKEY }}
           source_base_path_1: "sample/"
-          language: java
+          language: python
           prComment: true
           cwe: '117,331'
           DEBUG: true
