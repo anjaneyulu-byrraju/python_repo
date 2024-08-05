@@ -53,7 +53,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         name: ScanResults
-        path: /github/home/results.json
+        path: results.json
 
   veracode-fix:
     runs-on: ubuntu-latest
